@@ -14,11 +14,16 @@ dynamodb-cli -k KEYXXXXXXXX -s SECRETXXXXXXXX -r us-east-1
 ```
 
 ```
+
 dynamodb> CREATE TABLE test ( 
   hash STRING , 
   range NUMBER, 
   PRIMARY KEY ( hash, range ) 
 )
+
+```
+
+```
 
 dynamodb> INSERT INTO test 
 SET 
@@ -29,6 +34,9 @@ SET
   nulled = null, 
   object = {}
 
+```
+
+```
 
 dynamodb> INSERT INTO test 
 SET 
@@ -38,11 +46,19 @@ SET
   boolean = false, 
   array = []
 
+```
+
+```
+
 dynamodb> INSERT INTO test 
 SET 
   hash = 'h1', 
   range = 3, 
   array_of_objects = [{k:'v'},{k2:'v2'}]
+
+```
+
+```
 
 dynamodb> SELECT 
   * 
@@ -53,17 +69,29 @@ WHERE
 DESC 
 LIMIT 2
 
+```
+
+```
+
 dynamodb> DELETE 
 FROM 
   test 
 WHERE 
   hash = 'h1' AND range = 3
 
+```
+
+```
+
 dynamodb> REPLACE 
 INTO 
   test 
 SET 
   hash = 'h1', range = 2
+
+```
+
+```
 
 dynamodb> UPDATE 
   test 
