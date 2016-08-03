@@ -1,27 +1,27 @@
 {
-  "name": "dynamodb-cli",
-  "version": "0.0.1",
-  "description": "A simple CLI for AWS DynamoDB that uses a simple SQL-like syntax",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/databank/dynamodb-cli.git"
-  },
-  "keywords": [
-    "dynamodb",
-    "cli"
-  ],
-  "author": "Adrian Praja",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/databank/dynamodb-cli/issues"
-  },
-  "homepage": "https://github.com/databank/dynamodb-cli#readme",
+	"name": "dynamodb-cli",
+	"version": "0.1.0",
+	"description": "A simple CLI for AWS DynamoDB that uses an SQL-like syntax",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/databank/dynamodb-cli.git"
+	},
+	"keywords": [
+		"dynamodb",
+		"cli"
+	],
+	"author": "Adrian Praja",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/databank/dynamodb-cli/issues"
+	},
+	"homepage": "https://github.com/databank/dynamodb-cli#readme",
 	"dependencies": {
 		"commander": "*",
 		"readline": "*",
 
-		"dynamodb-sql": "*",
+		"dynamodb-sql": "0.7.1",
 
 		"memdown": "*",
 		"dynalite": "1.0.1",

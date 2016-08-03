@@ -33,6 +33,7 @@ function process_one_line() {
 				console.log("Type \"help TOPIC\" for more details:\n\
 \n\
 Available topics:\n\
+SHOW TABLES		\n\
 CREATE TABLE	\n\
 INSERT			\n\
 UPDATE			\n\
