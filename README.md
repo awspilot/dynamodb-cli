@@ -25,6 +25,12 @@ dynamodb> CREATE TABLE test (
 
 ```
 
+dynamodb> SHOW TABLES
+
+```
+
+```
+
 dynamodb> INSERT INTO test 
 SET 
   hash = 'h1', 
