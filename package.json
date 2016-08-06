@@ -23,7 +23,7 @@
 		"figlet": "*",
 		"cli-table": "*",
 
-		"dynamodb-sql": "0.7.3",
+		"dynamodb-sql": "0.8.0",
 
 		"memdown": "*",
 		"dynalite": "1.0.1",

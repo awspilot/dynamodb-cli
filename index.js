@@ -35,13 +35,12 @@ function process_one_line() {
 
 				if (op == 'SHOW_TABLES') {
 					var table = new Table({head: ['Table Name']})
-					data.map(function(v) {table.push([v]) })
+					data.TableNames.map(function(v) {table.push([v]) })
 					console.log(table.toString());
 					return rl.prompt();
 				}
 
 				if (op == 'CREATE_TABLE') {
-					console.log('op is create table')
 					var table = new Table({head: ['Index Name','Index Type','Partition','Sort','Projection','Throughput' ]})
 					table.push(
 						[
@@ -64,7 +63,7 @@ function process_one_line() {
 											.map(function(v) { return v.AttributeType }).join(' ')
 							}).join("\n"),
 							'',
-							data.TableDescription.ProvisionedThroughput.ReadCapacityUnits + ' ' + data.TableDescription.ProvisionedThroughput.WriteCapacityUnits
+							data.TableDescription.ProvisionedThroughput.ReadCapacityUnits + ' ' + data.TableDescription.ProvisionedThroughput.WriteCapacityUnits,
 						]
 					)
 
@@ -72,7 +71,7 @@ function process_one_line() {
 						table.push(
 							[
 								v.IndexName,
-								'LSI',
+								'GSI',
 								v.KeySchema
 									.filter(function(v) {return v.KeyType === 'HASH'})
 									.map(function(v) {
@@ -98,7 +97,7 @@ function process_one_line() {
 						table.push(
 							[
 								v.IndexName,
-								'GSI',
+								'LSI',
 								v.KeySchema
 									.filter(function(v) {return v.KeyType === 'HASH'})
 									.map(function(v) {
@@ -120,6 +119,101 @@ function process_one_line() {
 							]
 						)
 					})
+					console.log(table.toString());
+					//console.log(JSON.stringify(data, null, "\t"))
+					return rl.prompt();
+				}
+
+				if (op == 'DESCRIBE_TABLE') {
+					var table = new Table({head: ['Index Name','Index Type','Partition','Sort','Projection','Throughput','Status','Size','Items' ]})
+					table.push(
+						[
+							data.Table.TableName + ' ( table ) ',
+							'PRIMARY KEY',
+							data.Table.KeySchema
+								.filter(function(v) {return v.KeyType === 'HASH'})
+								.map(function(v) {
+								return	v.AttributeName + ' ' +
+										data.Table.AttributeDefinitions
+											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+											.map(function(v) { return v.AttributeType }).join(' ')
+							}).join("\n"),
+							data.Table.KeySchema
+								.filter(function(v) {return v.KeyType === 'RANGE'})
+								.map(function(v) {
+								return	v.AttributeName + ' ' +
+										data.Table.AttributeDefinitions
+											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+											.map(function(v) { return v.AttributeType }).join(' ')
+							}).join("\n"),
+							'',
+							data.Table.ProvisionedThroughput.ReadCapacityUnits + ' ' + data.Table.ProvisionedThroughput.WriteCapacityUnits,
+							data.Table.TableStatus,
+							data.Table.TableSizeBytes,
+							data.Table.ItemCount,
+
+						]
+					)
+
+					data.Table.GlobalSecondaryIndexes.map(function(v) {
+						table.push(
+							[
+								v.IndexName,
+								'GSI',
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'HASH'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.Table.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'RANGE'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.Table.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.Projection.ProjectionType === 'INCLUDE' ? (v.Projection.NonKeyAttributes.join(",\n") ) : v.Projection.ProjectionType,
+								v.ProvisionedThroughput.ReadCapacityUnits + ' ' + v.ProvisionedThroughput.WriteCapacityUnits,
+								v.IndexStatus,
+								v.IndexSizeBytes,
+								v.ItemCount
+							]
+						)
+					})
+					data.Table.LocalSecondaryIndexes.map(function(v) {
+						table.push(
+							[
+								v.IndexName,
+								'LSI',
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'HASH'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.Table.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'RANGE'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.Table.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.Projection.ProjectionType === 'INCLUDE' ? (v.Projection.NonKeyAttributes.join(",\n") ) : v.Projection.ProjectionType,
+								'N/A',
+								'N/A',
+								v.IndexSizeBytes,
+								v.ItemCount
+							]
+						)
+					})
+
 					console.log(table.toString());
 					//console.log(JSON.stringify(data, null, "\t"))
 					return rl.prompt();

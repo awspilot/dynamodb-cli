@@ -15,6 +15,7 @@ cli_overrides = function(line) {
 \n\
 Available topics:\n\
 SHOW TABLES		\n\
+DESCRIBE TABLE	\n\
 CREATE TABLE	\n\
 INSERT			\n\
 UPDATE			\n\
@@ -87,7 +88,7 @@ command_guess = function(line) {
 	if (['INSERT','UPDATE','REPLACE','DELETE','SELECT'].indexOf(q.slice(0,1).join(' ')) !== -1)
 		return q.slice(0,1).join(' ')
 
-	if (['SHOW TABLES','CREATE TABLE'].indexOf(q.slice(0,2).join(' '))  !== -1)
+	if (['SHOW TABLES','CREATE TABLE','DESCRIBE TABLE'].indexOf(q.slice(0,2).join(' '))  !== -1)
 		return q.slice(0,2).join('_')
 
 	return;
