@@ -18,7 +18,12 @@ dynamodb-cli -k KEYXXXXXXXX -s SECRETXXXXXXXX -r us-east-1
 dynamodb> CREATE TABLE test ( 
   hash STRING , 
   range NUMBER, 
-  PRIMARY KEY ( hash, range ) 
+  range2 STRING,
+  hash2 STRING,
+  PRIMARY KEY ( hash, range ),
+  INDEX index1 LSI ( hash, range2 ),
+  INDEX index2 GSI ( hash2, range2 ) PROJECTION KEYS_ONLY,
+  INDEX index3 GSI ( hash2 ) PROJECTION ( range2 ) 
 )
 
 ```
@@ -28,6 +33,13 @@ dynamodb> CREATE TABLE test (
 dynamodb> SHOW TABLES
 
 ```
+
+```
+
+dynamodb> DESCRIBE TABLE test
+
+```
+
 
 ```
 
