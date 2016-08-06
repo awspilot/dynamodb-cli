@@ -1,6 +1,9 @@
 #!/usr/bin/env node
+require('./cli_overrides');
 var program = require('commander');
 var readline = require('readline');
+var figlet = require('figlet');
+var Table = require('cli-table');
 
 var dynalite = require('dynalite'),
 dynaliteServer = dynalite({ createTableMs: 50,db: require('memdown')})
@@ -20,84 +23,108 @@ rl.setPrompt('dynamodb> ');
 function process_one_line() {
 	rl.prompt();
 	rl.on('line', function(line) {
-		if (line.trim().toUpperCase() === "QUIT")
-			return process.exit()
+		if (cli_overrides(line))
+			return rl.prompt()
 
-		if (line.trim().toUpperCase() === "EXIT")
-			return process.exit()
 
-		if (line.trim().toUpperCase().split(' ')[0] === "HELP") {
-			var topic = line.trim().toUpperCase().split(' ').map(function(v) { return v.trim()}).filter(function(v) {return v !== ''}).slice(1).join(' ')
-			switch (topic) {
-				case '':
-				console.log("Type \"help TOPIC\" for more details:\n\
-\n\
-Available topics:\n\
-SHOW TABLES		\n\
-CREATE TABLE	\n\
-INSERT			\n\
-UPDATE			\n\
-REPLACE			\n\
-DELETE			\n\
-SELECT			\n\
-				")
+		DynamoSQL.query(line, function(err, data) {
+			if (err)
+				console.log(err)
+			else {
+				var op = command_guess(line)
 
-				break;
-				case 'INSERT':
-				console.log("INSERT INTO \n\
-    tbl_name \n\
-SET \n\
-    partition_key = <VALUE>, \n\
-    sort_key = <VALUE> \n\
-    [, other_key = <VALUE>, ... ]\n\
-				")
-				break;
-				case 'UPDATE':
-				console.log("UPDATE \n\
-    tbl_name \n\
-SET \n\
-    key1 OP <VALUE> [, key2 OP <VALUE>, ... ] \n\
-WHERE \n\
-    partition_key = <VALUE> AND sort_key = <VALUE>\n\
-				")
-				break;
-				case 'REPLACE':
-				console.log("REPLACE INTO \n\
-    tbl_name \n\
-SET \n\
-     partition_key = <VALUE>, sort_key = <VALUE> [, other_key = <VALUE>, ... ]\n\
-	 			")
-				break;
-				case 'DELETE':
-				console.log("DELETE FROM \n\
-    tbl_name \n\
-WHERE \n\
-    partition_key = <VALUE> AND sort_key = <VALUE>\n\
-				")
-				break;
-				case 'SELECT':
-				console.log("SELECT\n\
-    *\n\
-FROM\n\
-    tbl_name \n\
-[ USE INDEX index_name ]\n\
-WHERE\n\
-    partition_key = <VALUE> \n\
-    [ AND sort_key OP <VALUE> ]\n\
- \n\
-[ HAVING attribute OP <VALUE> [ AND attribute OP <VALUE> ] ]\n\
-[ DESC ]\n\
-[ LIMIT <number> ]\n\
-[ CONSISTENT_READ ]\n\
-				")
-				break;
-			}
-			rl.prompt()
-		} else if (line.trim() !== '') {
-			DynamoSQL.query(line, function(err, data) {
-				if (err)
-					console.log(err)
-				else {
+				if (op == 'SHOW_TABLES') {
+					var table = new Table({head: ['Table Name']})
+					data.map(function(v) {table.push([v]) })
+					console.log(table.toString());
+					return rl.prompt();
+				}
+
+				if (op == 'CREATE_TABLE') {
+					console.log('op is create table')
+					var table = new Table({head: ['Index Name','Index Type','Partition','Sort','Projection','Throughput' ]})
+					table.push(
+						[
+							data.TableDescription.TableName + ' ( table ) ',
+							'PRIMARY KEY',
+							data.TableDescription.KeySchema
+								.filter(function(v) {return v.KeyType === 'HASH'})
+								.map(function(v) {
+								return	v.AttributeName + ' ' +
+										data.TableDescription.AttributeDefinitions
+											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+											.map(function(v) { return v.AttributeType }).join(' ')
+							}).join("\n"),
+							data.TableDescription.KeySchema
+								.filter(function(v) {return v.KeyType === 'RANGE'})
+								.map(function(v) {
+								return	v.AttributeName + ' ' +
+										data.TableDescription.AttributeDefinitions
+											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+											.map(function(v) { return v.AttributeType }).join(' ')
+							}).join("\n"),
+							'',
+							data.TableDescription.ProvisionedThroughput.ReadCapacityUnits + ' ' + data.TableDescription.ProvisionedThroughput.WriteCapacityUnits
+						]
+					)
+
+					data.TableDescription.GlobalSecondaryIndexes.map(function(v) {
+						table.push(
+							[
+								v.IndexName,
+								'LSI',
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'HASH'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'RANGE'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.Projection.ProjectionType === 'INCLUDE' ? (v.Projection.NonKeyAttributes.join(",\n") ) : v.Projection.ProjectionType,
+								v.ProvisionedThroughput.ReadCapacityUnits + ' ' + v.ProvisionedThroughput.WriteCapacityUnits
+							]
+						)
+					})
+					data.TableDescription.LocalSecondaryIndexes.map(function(v) {
+						table.push(
+							[
+								v.IndexName,
+								'GSI',
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'HASH'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'RANGE'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.Projection.ProjectionType === 'INCLUDE' ? (v.Projection.NonKeyAttributes.join(",\n") ) : v.Projection.ProjectionType,
+								'-'
+							]
+						)
+					})
+					console.log(table.toString());
+					//console.log(JSON.stringify(data, null, "\t"))
+					return rl.prompt();
+				}
+
 					if (data instanceof Array) {
 						data.map(function(v) {
 							console.log(JSON.stringify(v, null, "\t"))
@@ -106,14 +133,9 @@ WHERE\n\
 						console.log(JSON.stringify(data, null, "\t"))
 					}
 
-
-				}
-				rl.prompt();
-			})
-		} else {
-			rl.prompt()
-		}
-
+			}
+			rl.prompt();
+		})
 	}).on('close',function(){
 		process.exit(0);
 	});
@@ -142,7 +164,18 @@ program
 			DynamoSQL = require('dynamodb-sql')( new AWS.DynamoDB({endpoint: 'http://localhost:4567', "accessKeyId": "akid", "secretAccessKey": "secret", "region": "us-east-1" }))
 		}
 		//console.log('params:', program.key, program.secret, program.region);
-		process_one_line()
+
+		figlet('DynamoDB', function(err, data) {
+			console.log(data)
+			console.log("\n")
+
+			process_one_line()
+		});
+
+
+
+
+
 
 	})
 	.parse(['asd'].concat( process.argv ));

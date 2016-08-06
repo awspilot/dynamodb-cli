@@ -1,6 +1,6 @@
 {
 	"name": "dynamodb-cli",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "A simple CLI for AWS DynamoDB that uses an SQL-like syntax",
 	"main": "index.js",
 	"repository": {
@@ -20,8 +20,10 @@
 	"dependencies": {
 		"commander": "*",
 		"readline": "*",
+		"figlet": "*",
+		"cli-table": "*",
 
-		"dynamodb-sql": "0.7.2",
+		"dynamodb-sql": "0.7.3",
 
 		"memdown": "*",
 		"dynalite": "1.0.1",
