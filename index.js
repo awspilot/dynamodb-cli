@@ -67,7 +67,7 @@ function process_one_line() {
 						]
 					)
 
-					data.TableDescription.GlobalSecondaryIndexes.map(function(v) {
+					;(data.TableDescription.GlobalSecondaryIndexes || []).map(function(v) {
 						table.push(
 							[
 								v.IndexName,
@@ -93,7 +93,7 @@ function process_one_line() {
 							]
 						)
 					})
-					data.TableDescription.LocalSecondaryIndexes.map(function(v) {
+					;(data.TableDescription || []).LocalSecondaryIndexes.map(function(v) {
 						table.push(
 							[
 								v.IndexName,
@@ -155,7 +155,7 @@ function process_one_line() {
 						]
 					)
 
-					data.Table.GlobalSecondaryIndexes.map(function(v) {
+					;(data.Table.GlobalSecondaryIndexes || []).map(function(v) {
 						table.push(
 							[
 								v.IndexName,
@@ -184,7 +184,7 @@ function process_one_line() {
 							]
 						)
 					})
-					data.Table.LocalSecondaryIndexes.map(function(v) {
+					;(data.Table.LocalSecondaryIndexes || []).map(function(v) {
 						table.push(
 							[
 								v.IndexName,
