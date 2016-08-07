@@ -1,3 +1,5 @@
+[![npm page](https://nodei.co/npm/dynamodb-cli.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/dynamodb-cli)
+
 # dynamodb-cli
 
 ```
