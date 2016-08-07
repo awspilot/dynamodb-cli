@@ -31,19 +31,19 @@ dynamodb> CREATE TABLE test (
   range NUMBER, 
   range2 STRING,
   hash2 STRING,
-  PRIMARY KEY ( hash, range ),
+  PRIMARY KEY ( hash, range ) THROUGHPUT 5 5,
   INDEX index1 LSI ( hash, range2 ),
-  INDEX index2 GSI ( hash2, range2 ) PROJECTION KEYS_ONLY,
-  INDEX index3 GSI ( hash2 ) PROJECTION ( range2 ) 
+  INDEX index2 GSI ( hash2, range2 ) PROJECTION KEYS_ONLY THROUGHPUT 2 2,
+  INDEX index3 GSI ( hash2 ) PROJECTION ( range2 )
 );
 ┌───────────────────────────────────────────────────────────────────────────┐
 │ test                                                                      │
 ├────────────┬─────────────┬───────────┬──────────┬────────────┬────────────┤
 │ Index Name │ Index Type  │ Partition │ Sort     │ Projection │ Throughput │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┤
-│            │ PRIMARY KEY │ hash S    │ range N  │            │ 1 1        │
+│            │ PRIMARY KEY │ hash S    │ range N  │            │ 5 5        │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┤
-│ index2     │ GSI         │ hash2 S   │ range2 S │ KEYS_ONLY  │ 1 1        │
+│ index2     │ GSI         │ hash2 S   │ range2 S │ KEYS_ONLY  │ 2 2        │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┤
 │ index3     │ GSI         │ hash2 S   │          │ range2     │ 1 1        │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┤
@@ -71,15 +71,14 @@ dynamodb> DESCRIBE TABLE test;
 ├────────────┬─────────────┬───────────┬──────────┬────────────┬────────────┬────────┬──────┬───────┤
 │ Index Name │ Index Type  │ Partition │ Sort     │ Projection │ Throughput │ Status │ Size │ Items │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼────────┼──────┼───────┤
-│            │ PRIMARY KEY │ hash S    │ range N  │            │    1/1     │ ACTIVE │    0 │     0 │
+│            │ PRIMARY KEY │ hash S    │ range N  │            │    5/5     │ ACTIVE │    0 │     0 │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼────────┼──────┼───────┤
-│ index2     │ GSI         │ hash2 S   │ range2 S │ KEYS_ONLY  │    1/1     │ ACTIVE │    0 │     0 │
+│ index2     │ GSI         │ hash2 S   │ range2 S │ KEYS_ONLY  │    2/2     │ ACTIVE │    0 │     0 │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼────────┼──────┼───────┤
 │ index3     │ GSI         │ hash2 S   │          │ range2     │    1/1     │ ACTIVE │    0 │     0 │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼────────┼──────┼───────┤
 │ index1     │ LSI         │ hash S    │ range2 S │    ALL     │    -/-     │ N/A    │    0 │     0 │
 └────────────┴─────────────┴───────────┴──────────┴────────────┴────────────┴────────┴──────┴───────┘
-
 ```
 
 ```
@@ -180,7 +179,7 @@ dynamodb> DROP TABLE test;
 ├────────────┬─────────────┬───────────┬──────────┬────────────┬────────────┬──────────┬──────┬───────┤
 │ Index Name │ Index Type  │ Partition │ Sort     │ Projection │ Throughput │ Status   │ Size │ Items │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼──────────┼──────┼───────┤
-│            │ PRIMARY KEY │ hash S    │ range N  │            │    1/1     │ DELETING │    0 │     0 │
+│            │ PRIMARY KEY │ hash S    │ range N  │            │    5/5     │ DELETING │    0 │     0 │
 ├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼──────────┼──────┼───────┤
 │ index1     │ LSI         │ hash S    │ range2 S │    ALL     │    -/-     │ N/A      │    0 │     0 │
 └────────────┴─────────────┴───────────┴──────────┴────────────┴────────────┴──────────┴──────┴───────┘
