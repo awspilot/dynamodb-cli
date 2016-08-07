@@ -13,15 +13,16 @@ cli_overrides = function(line) {
 				case '':
 				console.log("Type \"help TOPIC\" for more details:\n\
 \n\
-Available topics:\n\
-SHOW TABLES		\n\
-DESCRIBE TABLE	\n\
-CREATE TABLE	\n\
-INSERT			\n\
-UPDATE			\n\
-REPLACE			\n\
-DELETE			\n\
-SELECT			\n\
+Available topics:			\n\
+SHOW TABLES					\n\
+DESCRIBE TABLE	tbl_name	\n\
+CREATE TABLE				\n\
+DROP TABLE	tbl_name		\n\
+INSERT						\n\
+UPDATE						\n\
+REPLACE						\n\
+DELETE						\n\
+SELECT						\n\
 				")
 
 				break;
@@ -83,13 +84,21 @@ WHERE\n\
 	return false
 }
 command_guess = function(line) {
-	var q = line.split(' ').map(function(v) {return v.trim().toUpperCase()}).filter(function(v){ return v != ''})
+	var q = line.split("\n").join(' ').split(' ').map(function(v) {return v.trim().toUpperCase()}).filter(function(v){ return v != ''})
 
 	if (['INSERT','UPDATE','REPLACE','DELETE','SELECT'].indexOf(q.slice(0,1).join(' ')) !== -1)
 		return q.slice(0,1).join(' ')
 
-	if (['SHOW TABLES','CREATE TABLE','DESCRIBE TABLE'].indexOf(q.slice(0,2).join(' '))  !== -1)
+	if (['SHOW TABLES','CREATE TABLE','DESCRIBE TABLE','DROP TABLE'].indexOf(q.slice(0,2).join(' '))  !== -1)
 		return q.slice(0,2).join('_')
 
 	return;
+}
+command_is_sistem = function(cmd) {
+	var q = cmd.split("\n").join(' ').split(' ').map(function(v) {return v.trim().toUpperCase()}).filter(function(v){ return v != ''})
+
+	if (['HELP','EXIT','QUIT'].indexOf(q.slice(0,1).join(' ')) !== -1)
+		return true
+
+	return false;
 }
