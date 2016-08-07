@@ -48,12 +48,20 @@ dynamodb> CREATE TABLE test (
 │ index1     │ LSI         │ hash S    │ range2 S │ ALL        │ -          │
 └────────────┴─────────────┴───────────┴──────────┴────────────┴────────────┘
 
+```
+
+```
+
 dynamodb> SHOW TABLES;
 ┌────────────┐
 │ Table Name │
 ├────────────┤
 │ test       │
 └────────────┘
+
+```
+
+```
 
 dynamodb> DESCRIBE TABLE test;
 ┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -70,6 +78,10 @@ dynamodb> DESCRIBE TABLE test;
 │ index1     │ LSI         │ hash S    │ range2 S │    ALL     │    -/-     │ N/A    │    0 │     0 │
 └────────────┴─────────────┴───────────┴──────────┴────────────┴────────────┴────────┴──────┴───────┘
 
+```
+
+```
+
 dynamodb> INSERT INTO test 
 SET 
   hash = 'h1', 
@@ -81,6 +93,10 @@ SET
 
 {}
 
+```
+
+```
+
 dynamodb> INSERT INTO test 
 SET 
   hash = 'h1', 
@@ -88,6 +104,10 @@ SET
   array_of_objects = [{k:'v'},{k2:'v2'}];
   
 {}
+
+```
+
+```
 
 dynamodb> SELECT 
   * 
@@ -119,6 +139,10 @@ LIMIT 2;
 	"object": {}
 }
 
+```
+
+```
+
 dynamodb> DELETE 
 FROM 
   test 
@@ -131,14 +155,33 @@ INTO
 SET 
   hash = 'h1', range = 2;
   
-  
+```
+
+```
+
 dynamodb> UPDATE 
   test 
 SET 
   boolean = false, 
   number+=1 
 WHERE 
-  hash = 'h1' AND range = 1
+  hash = 'h1' AND range = 1;
+
+```
+
+```
+
+dynamodb> DROP TABLE test;
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ test                                                                                                │
+├────────────┬─────────────┬───────────┬──────────┬────────────┬────────────┬──────────┬──────┬───────┤
+│ Index Name │ Index Type  │ Partition │ Sort     │ Projection │ Throughput │ Status   │ Size │ Items │
+├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼──────────┼──────┼───────┤
+│            │ PRIMARY KEY │ hash S    │ range N  │            │    1/1     │ DELETING │    0 │     0 │
+├────────────┼─────────────┼───────────┼──────────┼────────────┼────────────┼──────────┼──────┼───────┤
+│ index1     │ LSI         │ hash S    │ range2 S │    ALL     │    -/-     │ N/A      │    0 │     0 │
+└────────────┴─────────────┴───────────┴──────────┴────────────┴────────────┴──────────┴──────┴───────┘
 
 ```
 
