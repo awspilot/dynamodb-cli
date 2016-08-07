@@ -70,6 +70,8 @@ function process_one_line() {
 					return rl.prompt();
 				}
 				if (op == 'DROP_TABLE') {
+					//console.log(JSON.stringify(data,null,"\t"))
+
 					var table = new Table(
 						//{head: ['Index Name','Index Type','Partition','Sort','Projection','Throughput','Status','Size','Items' ]}
 					)
@@ -91,7 +93,7 @@ function process_one_line() {
 						[
 							'',
 							'PRIMARY KEY',
-							data.TableDescription.KeySchema
+							(data.TableDescription.KeySchema || [])
 								.filter(function(v) {return v.KeyType === 'HASH'})
 								.map(function(v) {
 								return	v.AttributeName + ' ' +
@@ -99,7 +101,7 @@ function process_one_line() {
 											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
 											.map(function(v) { return v.AttributeType }).join(' ')
 							}).join("\n"),
-							data.TableDescription.KeySchema
+							(data.TableDescription.KeySchema || [])
 								.filter(function(v) {return v.KeyType === 'RANGE'})
 								.map(function(v) {
 								return	v.AttributeName + ' ' +
