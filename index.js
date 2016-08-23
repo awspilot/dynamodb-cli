@@ -70,8 +70,6 @@ function process_one_line() {
 					return rl.prompt();
 				}
 				if (op == 'DROP_TABLE') {
-					//console.log(JSON.stringify(data,null,"\t"))
-
 					var table = new Table(
 						//{head: ['Index Name','Index Type','Partition','Sort','Projection','Throughput','Status','Size','Items' ]}
 					)
@@ -283,7 +281,106 @@ function process_one_line() {
 							]
 						)
 					})
-					;(data.TableDescription || []).LocalSecondaryIndexes.map(function(v) {
+					;((data.TableDescription || []).LocalSecondaryIndexes || []).map(function(v) {
+						table.push(
+							[
+								v.IndexName,
+								'LSI',
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'HASH'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.KeySchema
+									.filter(function(v) {return v.KeyType === 'RANGE'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								v.Projection.ProjectionType === 'INCLUDE' ? (v.Projection.NonKeyAttributes.join(",\n") ) : v.Projection.ProjectionType,
+								'-'
+							]
+						)
+					})
+					console.log(table.toString());
+					//console.log(JSON.stringify(data, null, "\t"))
+					return rl.prompt();
+				}
+
+				if (op == 'DROP_INDEX') {
+					var table = new Table(
+						//{head: ['Index Name','Index Type','Partition','Sort','Projection','Throughput','Status','Size','Items' ]}
+					)
+					table.push([
+						{colSpan:6,content:data.TableDescription.TableName}
+					])
+					table.push([
+						colors.red('Index Name'),
+						colors.red('Index Type'),
+						colors.red('Partition'),
+						colors.red('Sort'),
+						colors.red('Projection'),
+						colors.red('Throughput'),
+					])
+
+					table.push(
+						[
+							'',
+							'PRIMARY KEY',
+							data.TableDescription.KeySchema
+								.filter(function(v) {return v.KeyType === 'HASH'})
+								.map(function(v) {
+								return	v.AttributeName + ' ' +
+										data.TableDescription.AttributeDefinitions
+											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+											.map(function(v) { return v.AttributeType }).join(' ')
+							}).join("\n"),
+							data.TableDescription.KeySchema
+								.filter(function(v) {return v.KeyType === 'RANGE'})
+								.map(function(v) {
+								return	v.AttributeName + ' ' +
+										data.TableDescription.AttributeDefinitions
+											.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+											.map(function(v) { return v.AttributeType }).join(' ')
+							}).join("\n"),
+							'',
+							data.TableDescription.ProvisionedThroughput.ReadCapacityUnits + ' ' + data.TableDescription.ProvisionedThroughput.WriteCapacityUnits,
+						]
+					)
+
+					;(data.TableDescription.GlobalSecondaryIndexes || []).map(function(v) {
+						table.push(
+							[
+								v.IndexName,
+								'GSI',
+								(v.KeySchema || [])
+									.filter(function(v) {return v.KeyType === 'HASH'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+
+								}).join("\n"),
+								(v.KeySchema || [])
+									.filter(function(v) {return v.KeyType === 'RANGE'})
+									.map(function(v) {
+									return	v.AttributeName + ' ' +
+											data.TableDescription.AttributeDefinitions
+												.filter(function(vv) { return vv.AttributeName === v.AttributeName })
+												.map(function(v) { return v.AttributeType }).join(' ')
+								}).join("\n"),
+								(v.Projection || {}).ProjectionType === 'INCLUDE' ? (v.Projection.NonKeyAttributes.join(",\n") ) : (v.Projection || {}).ProjectionType,
+								v.ProvisionedThroughput.ReadCapacityUnits + ' ' + v.ProvisionedThroughput.WriteCapacityUnits
+							]
+						)
+					})
+					;((data.TableDescription || []).LocalSecondaryIndexes || []).map(function(v) {
 						table.push(
 							[
 								v.IndexName,

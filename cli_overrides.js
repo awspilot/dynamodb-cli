@@ -89,7 +89,7 @@ command_guess = function(line) {
 	if (['INSERT','UPDATE','REPLACE','DELETE','SELECT'].indexOf(q.slice(0,1).join(' ')) !== -1)
 		return q.slice(0,1).join(' ')
 
-	if (['SHOW TABLES','CREATE TABLE','DESCRIBE TABLE','DROP TABLE'].indexOf(q.slice(0,2).join(' '))  !== -1)
+	if (['SHOW TABLES','CREATE TABLE','DESCRIBE TABLE','DROP TABLE','DROP INDEX'].indexOf(q.slice(0,2).join(' '))  !== -1)
 		return q.slice(0,2).join('_')
 
 	return;
