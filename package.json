@@ -1,5 +1,5 @@
 {
-	"name": "dynamodb-cli",
+	"name": "@awspilot/dynamodb-cli",
 	"version": "1.0.0",
 	"description": "A simple CLI for AWS DynamoDB that uses an SQL-like syntax",
 	"main": "index.js",
@@ -27,8 +27,8 @@
 		"@awspilot/dynamodb-sql": "1.0.0",
 
 		"memdown": "*",
-		"dynalite": "1.2.0",
-		"aws-sdk": ">=2.3.9"
+		"dynalite": "*",
+		"aws-sdk": ">=2.45.0"
 	},
 	"bin": {
 		"dynamodb-cli": "./index.js"

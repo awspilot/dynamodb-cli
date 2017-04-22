@@ -13,7 +13,7 @@ dynaliteServer.listen(4567, function(err) {
 	if (err) throw err
 })
 var AWS = require('aws-sdk')
-var DynamoSQL = require('dynamodb-sql')( new AWS.DynamoDB({endpoint: 'http://localhost:4567', "accessKeyId": "akid", "secretAccessKey": "secret", "region": "us-east-1" }))
+var DynamoSQL = require('@awspilot/dynamodb-sql')( new AWS.DynamoDB({endpoint: 'http://localhost:4567', "accessKeyId": "akid", "secretAccessKey": "secret", "region": "us-east-1" }))
 
 var rl = readline.createInterface({
 	input: process.stdin,
@@ -588,14 +588,14 @@ program
 				secretAccessKey: program.secret,
 				region: program.region
 			})
-			DynamoSQL = require('dynamodb-sql')( new AWS.DynamoDB({
+			DynamoSQL = require('@awspilot/dynamodb-sql')( new AWS.DynamoDB({
 				accessKeyId: program.key,
 				secretAccessKey: program.secret,
 				region: program.region
 			}))
 
 		} else {
-			DynamoSQL = require('dynamodb-sql')( new AWS.DynamoDB({endpoint: 'http://localhost:4567', "accessKeyId": "akid", "secretAccessKey": "secret", "region": "us-east-1" }))
+			DynamoSQL = require('@awspilot/dynamodb-sql')( new AWS.DynamoDB({endpoint: 'http://localhost:4567', "accessKeyId": "akid", "secretAccessKey": "secret", "region": "us-east-1" }))
 		}
 
 		console.log("\nDynamoDB cli version ", config.version, " \n")
