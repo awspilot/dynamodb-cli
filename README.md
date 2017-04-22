@@ -4,7 +4,7 @@
 
 ```
 
-yourname@yourhost:~$ npm install -g dynamodb-cli
+yourname@yourhost:~$ npm install -g @awspilot/dynamodb-cli
 
 ```
 
@@ -26,9 +26,9 @@ yourname@yourhost:~$ dynamodb-cli
 
 ```
 
-dynamodb> CREATE TABLE test ( 
-  hash STRING , 
-  range NUMBER, 
+dynamodb> CREATE TABLE test (
+  hash STRING ,
+  range NUMBER,
   range2 STRING,
   hash2 STRING,
   PRIMARY KEY ( hash, range ) THROUGHPUT 5 5,
@@ -83,13 +83,13 @@ dynamodb> DESCRIBE TABLE test;
 
 ```
 
-dynamodb> INSERT INTO test 
-SET 
-  hash = 'h1', 
-  range = 1, 
-  number = 1001, 
-  boolean = true, 
-  nulled = null, 
+dynamodb> INSERT INTO test
+SET
+  hash = 'h1',
+  range = 1,
+  number = 1001,
+  boolean = true,
+  nulled = null,
   object = {};
 
 {}
@@ -98,25 +98,25 @@ SET
 
 ```
 
-dynamodb> INSERT INTO test 
-SET 
-  hash = 'h1', 
-  range = 3, 
+dynamodb> INSERT INTO test
+SET
+  hash = 'h1',
+  range = 3,
   array_of_objects = [{k:'v'},{k2:'v2'}];
-  
+
 {}
 
 ```
 
 ```
 
-dynamodb> SELECT 
-  * 
-FROM 
-  test 
-WHERE 
-  hash = 'h1' 
-DESC 
+dynamodb> SELECT
+  *
+FROM
+  test
+WHERE
+  hash = 'h1'
+DESC
 LIMIT 2;
 
 {
@@ -144,28 +144,28 @@ LIMIT 2;
 
 ```
 
-dynamodb> DELETE 
-FROM 
-  test 
-WHERE 
+dynamodb> DELETE
+FROM
+  test
+WHERE
   hash = 'h1' AND range = 3;
-  
-dynamodb> REPLACE 
-INTO 
-  test 
-SET 
+
+dynamodb> REPLACE
+INTO
+  test
+SET
   hash = 'h1', range = 2;
-  
-```
 
 ```
 
-dynamodb> UPDATE 
-  test 
-SET 
-  boolean = false, 
-  number+=1 
-WHERE 
+```
+
+dynamodb> UPDATE
+  test
+SET
+  boolean = false,
+  number+=1
+WHERE
   hash = 'h1' AND range = 1;
 
 ```
